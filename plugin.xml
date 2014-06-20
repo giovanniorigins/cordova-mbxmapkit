@@ -19,6 +19,23 @@
       </feature>
     </config-file>
 
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXConstantsAndTypes.h" />
+
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXMapKit.h" />
+    <source-file src="vendor/mbxmapkit/MBXMapKit/MBXMapKit.m" />
+
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXOfflineMapDatabase.h" />
+    <source-file src="vendor/mbxmapkit/MBXMapKit/MBXOfflineMapDatabase.m" />
+
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXOfflineMapDownloader.h" />
+    <source-file src="vendor/mbxmapkit/MBXMapKit/MBXOfflineMapDownloader.m" />
+
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXPointAnnotation.h" />
+    <source-file src="vendor/mbxmapkit/MBXMapKit/MBXPointAnnotation.m" />
+
+    <header-file src="vendor/mbxmapkit/MBXMapKit/MBXRasterTileOverlay.h" />
+    <source-file src="vendor/mbxmapkit/MBXMapKit/MBXRasterTileOverlay.m" />
+
     <header-file src="src/ios/CDVMBXMapKit.h" />
     <source-file src="src/ios/CDVMBXMapKit.m" />
   </platform>
