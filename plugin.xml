@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.alakra.cordova.mbxmapkit" version="0.1.0">
+
+  <name>MBXMapKit</name>
+  <description>MBXMapKit Plugin for Cordova</description>
+
+  <license>MIT, </license>
+  <keywords>cordova,mbxmapkit,mapkit,mapbox,maps,map</keywords>
+
+  <js-module src="www/mbxmapkit.js" name="device">
+    <clobbers target="mbxmapkit" />
+  </js-module>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="MBXMapKit">
+        <param name="ios-package" value="CDVMBXMapKit"/>
+      </feature>
+    </config-file>
+
+    <header-file src="src/ios/CDVMBXMapKit.h" />
+    <source-file src="src/ios/CDVMBXMapKit.m" />
+  </platform>
+</plugin>
