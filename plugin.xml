@@ -19,6 +19,9 @@
       </feature>
     </config-file>
 
+    <framework src="MapKit.framework" weak="true" />
+    <framework src="libsqlite3.dylib" weak="true" />
+
     <header-file src="vendor/mbxmapkit/MBXMapKit/MBXConstantsAndTypes.h" />
 
     <header-file src="vendor/mbxmapkit/MBXMapKit/MBXMapKit.h" />
