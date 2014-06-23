@@ -26,9 +26,8 @@
   self.mapView.showsPointsOfInterest = NO;
   self.mapView.autoresizingMask      = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  self.childView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  self.childView.autoresizingMask    = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  [self.mapView setRegion:region animated:YES];
   [self.childView addSubview:self.mapView];
 
   [[[ self viewController ] view ] addSubview:self.childView];
