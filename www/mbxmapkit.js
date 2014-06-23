@@ -12,43 +12,43 @@ MBXMapKit.prototype = {
   create: function() {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to create native map view."); },
-         "CDVMBXMapKit", "create", []);
+         "MBXMapKit", "create", []);
   },
 
   destroy: function() {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to destroy native map view."); },
-         "CDVMBXMapKit", "destroy", []);
+         "MBXMapKit", "destroy", []);
   },
 
   show: function() {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to show native map view."); },
-         "CDVMBXMapKit", "show", []);
+         "MBXMapKit", "show", []);
   },
 
   hide: function() {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to hide native map view."); },
-         "CDVMBXMapKit", "hide", []);
+         "MBXMapKit", "hide", []);
   },
 
   move: function(movementType, x, y) {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to move native map view."); },
-         "CDVMBXMapKit", "move", [movementType, x, y]);
+         "MBXMapKit", "move", [movementType, x, y]);
   },
 
   resize: function(width, height) {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to resize native map view."); },
-         "CDVMBXMapKit", "resize", [width, height]);
+         "MBXMapKit", "resize", [width, height]);
   },
 
   changeType: function(mapType) {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to change the type of native map view."); },
-         "CDVMBXMapKit", "changeType", [mapType]);
+         "MBXMapKit", "changeType", [mapType]);
   },
 
   addAnnotation: function() {},
