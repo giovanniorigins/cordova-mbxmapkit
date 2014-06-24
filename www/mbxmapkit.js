@@ -1,5 +1,6 @@
 var argscheck = require('cordova/argscheck'),
-    exec      = require('cordova/exec');
+    exec      = require('cordova/exec'),
+    q         = require('./q.min');
 
 function MBXMapKit() {
   this.view = null;
@@ -40,9 +41,22 @@ MBXMapKit.prototype = {
   },
 
   size: function() {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to retrieve size of native map view."); },
-         "MBXMapKit", "size", []);
+    var deferred = q.defer();
+
+    return exec(
+      function(params) {
+        deferred.resolve(params);
+      },
+
+      function(error)  {
+        console.error("Failed to retrieve size of native map view.");
+        deferred.reject(error);
+      },
+
+      "MBXMapKit", "size", []
+    );
+
+    return deferred.promise;
   },
 
   resize: function(width, height) {

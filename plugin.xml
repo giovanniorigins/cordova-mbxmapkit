@@ -8,8 +8,12 @@
   <license>MIT, </license>
   <keywords>cordova,mbxmapkit,mapkit,mapbox,maps,map</keywords>
 
-  <js-module src="www/mbxmapkit.js" name="device">
+  <js-module src="www/mbxmapkit.js" name="mbxmapkit">
     <clobbers target="mbxmapkit" />
+  </js-module>
+
+  <js-module src="www/q.min.js" name="q">
+    <clobbers target="q" />
   </js-module>
 
   <platform name="ios">
