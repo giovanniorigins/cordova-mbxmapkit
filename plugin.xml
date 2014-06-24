@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="com.alakra.cordova.mbxmapkit" version="0.1.0">
+        id="com.alakra.cordova" version="0.1.0">
 
   <name>MBXMapKit</name>
   <description>MBXMapKit Plugin for Cordova</description>
