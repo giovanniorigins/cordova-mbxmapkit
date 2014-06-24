@@ -15,10 +15,10 @@
 - (void)show:(CDVInvokedUrlCommand*)command;
 - (void)hide:(CDVInvokedUrlCommand*)command;
 
-- (void)size:(CDVInvokedUrlCommand*)command;
-- (void)resize:(CDVInvokedUrlCommand*)command;
-- (void)position:(CDVInvokedUrlCommand*)command;
-- (void)move:(CDVInvokedUrlCommand*)command;
+- (void)getSize:(CDVInvokedUrlCommand*)command;
+- (void)setSize:(CDVInvokedUrlCommand*)command;
+- (void)getCenter:(CDVInvokedUrlCommand*)command;
+- (void)setCenter:(CDVInvokedUrlCommand*)command;
 
 - (void)changeType:(CDVInvokedUrlCommand*)command;
 

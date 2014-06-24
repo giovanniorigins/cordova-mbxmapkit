@@ -34,35 +34,48 @@ MBXMapKit.prototype = {
          "MBXMapKit", "hide", []);
   },
 
-  move: function(movementType, x, y) {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to move native map view."); },
-         "MBXMapKit", "move", [movementType, x, y]);
-  },
-
-  size: function() {
+  getCenter: function() {
     var deferred = q.defer();
 
     exec(
-      function(params) {
-        deferred.resolve(params);
-      },
-
+      function(params) { deferred.resolve(params); },
       function(error)  {
-        console.error("Failed to retrieve size of native map view.");
+        console.error("Failed to retrieve origin coordinate of native map view.");
         deferred.reject(error);
       },
 
-      "MBXMapKit", "size", []
+      "MBXMapKit", "getCenter", []
     );
 
     return deferred.promise;
   },
 
-  resize: function(width, height) {
+  setCenter: function(x, y) {
+    exec(function(params) { return null; },
+         function(error)  { console.error("Failed to move native map view."); },
+         "MBXMapKit", "setCenter", [x, y]);
+  },
+
+  getSize: function() {
+    var deferred = q.defer();
+
+    exec(
+      function(params) { deferred.resolve(params); },
+      function(error)  {
+        console.error("Failed to retrieve size of native map view.");
+        deferred.reject(error);
+      },
+
+      "MBXMapKit", "getSize", []
+    );
+
+    return deferred.promise;
+  },
+
+  setSize: function(width, height) {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to resize native map view."); },
-         "MBXMapKit", "resize", [width, height]);
+         "MBXMapKit", "setSize", [width, height]);
   },
 
   changeType: function(mapType) {

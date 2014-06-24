@@ -52,7 +52,7 @@
   [self.childView removeFromSuperview];
 }
 
-- (void)size:(CDVInvokedUrlCommand*)command
+- (void)getSize:(CDVInvokedUrlCommand*)command
 {
   NSDictionary* params = @{ @"width" : [NSNumber numberWithFloat:self.childView.frame.size.width],
                             @"height" : [NSNumber numberWithFloat: self.childView.frame.size.height] };
@@ -61,7 +61,7 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)resize:(CDVInvokedUrlCommand*)command
+- (void)setSize:(CDVInvokedUrlCommand*)command
 {
   NSInteger width  = [[command.arguments objectAtIndex:0] floatValue];
   NSInteger height = [[command.arguments objectAtIndex:1] floatValue];
@@ -71,12 +71,21 @@
   self.childView.frame = frame;
 }
 
-- (void)position:(CDVInvokedUrlCommand*)command
+- (void)getCenter:(CDVInvokedUrlCommand*)command
 {
+  NSDictionary* params = @{ @"x" : [NSNumber numberWithFloat:self.childView.frame.origin.x],
+                            @"y" : [NSNumber numberWithFloat: self.childView.frame.origin.y] };
+
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)move:(CDVInvokedUrlCommand*)command
+- (void)setCenter:(CDVInvokedUrlCommand*)command
 {
+  NSInteger x = [[command.arguments objectAtIndex:0] floatValue];
+  NSInteger y = [[command.arguments objectAtIndex:1] floatValue];
+
+  self.childView.center = CGPointMake(x, y);
 }
 
 - (void)changeType:(CDVInvokedUrlCommand*)command
