@@ -43,7 +43,7 @@ MBXMapKit.prototype = {
   size: function() {
     var deferred = q.defer();
 
-    return exec(
+    exec(
       function(params) {
         deferred.resolve(params);
       },
