@@ -73,8 +73,8 @@
 
 - (void)getCenter:(CDVInvokedUrlCommand*)command
 {
-  NSDictionary* params = @{ @"x" : [NSNumber numberWithFloat:self.childView.frame.origin.x],
-                            @"y" : [NSNumber numberWithFloat: self.childView.frame.origin.y] };
+  NSDictionary* params = @{ @"x" : [NSNumber numberWithFloat: self.childView.center.x],
+                            @"y" : [NSNumber numberWithFloat: self.childView.center.y] };
 
   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
