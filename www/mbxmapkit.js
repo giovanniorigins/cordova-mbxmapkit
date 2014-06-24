@@ -39,6 +39,12 @@ MBXMapKit.prototype = {
          "MBXMapKit", "move", [movementType, x, y]);
   },
 
+  size: function() {
+    exec(function(params) { return null; },
+         function(error)  { console.error("Failed to retrieve size of native map view."); },
+         "MBXMapKit", "size", []);
+  },
+
   resize: function(width, height) {
     exec(function(params) { return null; },
          function(error)  { console.error("Failed to resize native map view."); },
