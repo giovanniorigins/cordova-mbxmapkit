@@ -46,6 +46,9 @@
 /** Whether this offline map database has been invalidated. This is to help prevent the completion handlers in `MBXRasterTileOverlay` from causing problems after overlay layers are removed from an `MKMapView`. */
 @property (readonly, nonatomic, getter=isInvalid) BOOL invalid;
 
+/** Initial creation date of the offline map database. */
+@property (readonly, nonatomic) NSDate *creationDate;
+
 - (instancetype)init __attribute__((unavailable("To instantiate MBXOfflineMapDatabase objects, please use the capabilities provided by MBXOfflineMapDownloader.")));
 
 @end
