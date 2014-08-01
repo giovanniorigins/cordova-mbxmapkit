@@ -2,6 +2,10 @@
 
 
 @interface CDVMBXMapKit () { }
+
+@property (nonatomic) MBXRasterTileOverlay *rasterOverlay;
+@property (nonatomic) NSString *onlineMapId;
+
 @end
 
 @implementation CDVMBXMapKit
@@ -52,6 +56,18 @@
   [self.childView removeFromSuperview];
 }
 
+- (void)setMapId:(CDVInvokedUrlCommand*)command
+{
+  _onlineMapId = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
+  if ([_onlineMapId length] != 0) { [self addOnlineMapLayer:_onlineMapId]; }
+}
+
+- (void)getMapId:(CDVInvokedUrlCommand*)command
+{
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:_onlineMapId];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)getSize:(CDVInvokedUrlCommand*)command
 {
   NSDictionary* params = @{ @"width" : [NSNumber numberWithFloat:self.childView.frame.size.width],
@@ -88,16 +104,85 @@
   self.childView.center = CGPointMake(x, y);
 }
 
-- (void)changeType:(CDVInvokedUrlCommand*)command
+#pragma mark - Helper Methods
+
+- (void)addOnlineMapLayer:(NSString *)mapId
 {
+  // remove old overlay if it exists
+  if (_rasterOverlay != nil) {
+    [self.mapView removeOverlay:_rasterOverlay];
+  }
+
+  // add new overlay
+  _rasterOverlay = [[MBXRasterTileOverlay alloc] initWithMapID:mapId];
+  _rasterOverlay.delegate = self;
+  [self.mapView addOverlay:_rasterOverlay];
 }
 
-- (void)addAnnotation:(CDVInvokedUrlCommand*)command
+
+#pragma mark - MKMapViewDelegate protocol implementation
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
+  // This is boilerplate code to connect tile overlay layers with suitable renderers
+  //
+  if ([overlay isKindOfClass:[MBXRasterTileOverlay class]]) {
+    MKTileOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    return renderer;
+  }
+
+  return nil;
 }
 
-- (void)removeAnnotation:(CDVInvokedUrlCommand*)command
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
+  // This is boilerplate code to connect annotations with suitable views
+  //
+  if ([annotation isKindOfClass:[MBXPointAnnotation class]]) {
+    static NSString *MBXSimpleStyleReuseIdentifier = @"MBXSimpleStyleReuseIdentifier";
+    MKAnnotationView *view = [mapView dequeueReusableAnnotationViewWithIdentifier:MBXSimpleStyleReuseIdentifier];
+
+    if (!view) {
+      view = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:MBXSimpleStyleReuseIdentifier];
+    }
+
+    view.image = ((MBXPointAnnotation *)annotation).image;
+    view.canShowCallout = YES;
+    return view;
+  }
+
+  return nil;
+}
+
+#pragma mark - MBXRasterTileOverlayDelegate implementation
+
+- (void)tileOverlay:(MBXRasterTileOverlay *)overlay didLoadMetadata:(NSDictionary *)metadata withError:(NSError *)error
+{
+  // This delegate callback is for centering the map once the map metadata has been loaded
+  //
+  if (error) {
+    NSLog(@"Failed to load metadata for map ID %@ - (%@)", overlay.mapID, error?error:@"");
+  } else {
+    [self.mapView mbx_setCenterCoordinate:overlay.center zoomLevel:overlay.centerZoom animated:NO];
+  }
+}
+
+
+- (void)tileOverlay:(MBXRasterTileOverlay *)overlay didLoadMarkers:(NSArray *)markers withError:(NSError *)error
+{
+  // This delegate callback is for adding map markers to an MKMapView once all the markers for the tile overlay have loaded
+  //
+  if (error) {
+    NSLog(@"Failed to load markers for map ID %@ - (%@)", overlay.mapID, error?error:@"");
+  }
+  else {
+    [self.mapView addAnnotations:markers];
+  }
+}
+
+- (void)tileOverlayDidFinishLoadingMetadataAndMarkers:(MBXRasterTileOverlay *)overlay
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 @end

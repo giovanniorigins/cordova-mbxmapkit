@@ -1,91 +1,76 @@
 var argscheck = require('cordova/argscheck'),
     exec      = require('cordova/exec'),
-    q         = require('com.alakra.cordova.q');
+    q         = require('com.alakra.cordova.mbxmapkit.q');
 
 function MBXMapKit() {
-  this.view = null;
-
-  this.annotations = [];
-  this.layers = [];
 };
 
 MBXMapKit.prototype = {
   create: function() {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to create native map view."); },
-         "MBXMapKit", "create", []);
+    this._callNative('create', [], 'Failed to create native map view.');
   },
 
   destroy: function() {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to destroy native map view."); },
-         "MBXMapKit", "destroy", []);
+    this._callNative('destroy', [], 'Failed to destroy native map view.');
   },
 
   show: function() {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to show native map view."); },
-         "MBXMapKit", "show", []);
+    this._callNative('show', [], 'Failed to show native map view.');
   },
 
   hide: function() {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to hide native map view."); },
-         "MBXMapKit", "hide", []);
+    this._callNative('hide', [], 'Failed to hide native map view.');
+  },
+
+  setMapId: function(id) {
+    this._callNative('setMapId', [id], 'Failed to set the map id.');
+  },
+
+  getMapId: function() {
+    return this._callNativeAndReturnPromise('getMapId', [], 'Failed to retrieve the map id.');
   },
 
   getCenter: function() {
-    var deferred = q.defer();
-
-    exec(
-      function(params) { deferred.resolve(params); },
-      function(error)  {
-        console.error("Failed to retrieve origin coordinate of native map view.");
-        deferred.reject(error);
-      },
-
-      "MBXMapKit", "getCenter", []
-    );
-
-    return deferred.promise;
+    return this._callNativeAndReturnPromise('getCenter', [], 'Failed to retrieve origin coordinate of native map view.');
   },
 
   setCenter: function(x, y) {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to move native map view."); },
-         "MBXMapKit", "setCenter", [x, y]);
+    this._callNative('setCenter', [x, y], 'Failed to move native map view.');
   },
 
   getSize: function() {
+    return this._callNativeAndReturnPromise('getSize', [], 'Failed to retrieve size of native map view.');
+  },
+
+  setSize: function(width, height) {
+    this._callNative('setSize', [width, height], 'Failed to resize native map view.');
+  },
+
+  changeType: function(mapType) {
+    this._callNative('changeType', [mapType], 'Failed to change the type of native map view.');
+  },
+
+  _callNative: function(method, args, errorMsg) {
+    exec(function(params) { return null; },
+         function(error)  { console.error(errorMsg); },
+         "MBXMapKit", method, args);
+  },
+
+  _callNativeAndReturnPromise: function(method, args, errorMsg) {
     var deferred = q.defer();
 
     exec(
       function(params) { deferred.resolve(params); },
       function(error)  {
-        console.error("Failed to retrieve size of native map view.");
+        console.error(errorMsg);
         deferred.reject(error);
       },
 
-      "MBXMapKit", "getSize", []
+      "MBXMapKit", method, args
     );
 
     return deferred.promise;
-  },
-
-  setSize: function(width, height) {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to resize native map view."); },
-         "MBXMapKit", "setSize", [width, height]);
-  },
-
-  changeType: function(mapType) {
-    exec(function(params) { return null; },
-         function(error)  { console.error("Failed to change the type of native map view."); },
-         "MBXMapKit", "changeType", [mapType]);
-  },
-
-  addAnnotation: function() {},
-  removeAnnotation: function() {}
+  }
 };
 
 
