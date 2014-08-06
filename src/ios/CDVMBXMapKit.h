@@ -1,11 +1,14 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+
 #import "MBXMapKit.h"
+#import "CDVMBXAnnotation.h"
+#import "CDVMBXAnnotationType.h"
+#import "CDVMBXAnnotationView.h"
 
 #import <Cordova/CDVPlugin.h>
 
-@interface CDVMBXMapKit : CDVPlugin <MKMapViewDelegate, MBXRasterTileOverlayDelegate> {
-}
+@interface CDVMBXMapKit : CDVPlugin <MKMapViewDelegate, MBXRasterTileOverlayDelegate>
 
 @property (strong, nonatomic) UIView *childView;
 @property (strong, nonatomic) MKMapView *mapView;
@@ -22,5 +25,8 @@
 - (void)setCenter:(CDVInvokedUrlCommand*)command;
 - (void)getMapId:(CDVInvokedUrlCommand*)command;
 - (void)setMapId:(CDVInvokedUrlCommand*)command;
+- (void)addAnnotation:(CDVInvokedUrlCommand*)command;
+- (void)removeAnnotation:(CDVInvokedUrlCommand*)command;
+- (void)removeAllAnnotations:(CDVInvokedUrlCommand*)command;
 
 @end
