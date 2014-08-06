@@ -50,6 +50,41 @@ MBXMapKit.prototype = {
     this._callNative('changeType', [mapType], 'Failed to change the type of native map view.');
   },
 
+  /*
+   * @see https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSString_Class/Reference/NSString.html#//apple_ref/occ/instp/NSString/boolValue
+   */
+  registerAnnotationType: function(title, options) {
+    var isRemote = (options.remote) ? 'Y' : 'N';
+    var params = [title, options.image_uri, isRemote, options.directory];
+    return this._callNativeAndReturnPromise('registerAnnotationType', params, 'Failed to register a new annotation type.');
+  },
+
+  addAnnotation: function(options) {
+    var title     = options.title;
+    var latitude  = options.coordinates.latitude;
+    var longitude = options.coordinates.longitude;
+    var type      = options.type || '';
+
+    // Generating ID for annotation
+    var id = (title + latitude + longitude + type)
+          .trim()
+          .replace(/([A-Z])/g, '-$1')
+          .replace(/[-_\s]+/g, '-')
+          .toLowerCase();
+
+    var params = [title, latitude, longitude, type, id];
+
+    return this._callNativeAndReturnPromise('addAnnotation', params, 'Failed to add annotation.');
+  },
+
+  removeAnnotation: function(id) {
+    return this._callNativeAndReturnPromise('removeAnnotation', [id], 'Failed to remove annotation.');
+  },
+
+  removeAllAnnotations: function() {
+    return this._callNativeAndReturnPromise('removeAllAnnotations', [], 'Failed to remove all annotations.');
+  },
+
   _callNative: function(method, args, errorMsg) {
     exec(function(params) { return null; },
          function(error)  { console.error(errorMsg); },

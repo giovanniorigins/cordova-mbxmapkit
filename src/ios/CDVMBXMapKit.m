@@ -5,6 +5,9 @@
 
 @property (nonatomic) MBXRasterTileOverlay *rasterOverlay;
 @property (nonatomic) NSString *onlineMapId;
+@property (nonatomic) int annotationIdCount;
+@property (nonatomic) NSMutableDictionary *annotations;
+@property (nonatomic) NSMutableDictionary *annotationTypes;
 
 @end
 
@@ -12,7 +15,9 @@
 
 - (void)pluginInitialize
 {
-  // Nothing yet
+  self.annotations     = [NSMutableDictionary new];
+  self.annotationTypes = [NSMutableDictionary new];
+  self.annotationIdCount = 0;
 }
 
 - (void)create:(CDVInvokedUrlCommand*)command
@@ -40,10 +45,14 @@
 
 - (void)destroy:(CDVInvokedUrlCommand*)command
 {
-  [self.mapView removeAnnotations:self.mapView.annotations];
+  [self.mapView removeAnnotations:[self.annotations allValues]];
+  [self.annotations removeAllObjects];
   [self.mapView removeOverlays:self.mapView.overlays];
+  [self.annotationTypes removeAllObjects];
 
   self.mapView = nil;
+
+  [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Destroyed the map."];
 }
 
 - (void)show:(CDVInvokedUrlCommand*)command
@@ -104,6 +113,74 @@
   self.childView.center = CGPointMake(x, y);
 }
 
+- (void)registerAnnotationType:(CDVInvokedUrlCommand*)command
+{
+  NSString* name      = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
+  NSString* uri       = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:1]];
+  BOOL isRemote       = [[command.arguments objectAtIndex:2] boolValue];
+  NSString* directory = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:3]];
+
+  CDVMBXAnnotationType* type = [CDVMBXAnnotationType new];
+  [type setName:name];
+  [type setImageUri:uri];
+  [type setIsRemote:isRemote];
+  [type setDirectory:directory];
+
+  [type loadImage];
+
+  [self.annotationTypes setObject:type forKey:name];
+
+  NSDictionary* params = @{@"name":name, @"uri":uri};
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)addAnnotation:(CDVInvokedUrlCommand*)command
+{
+  NSString* title = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
+
+  CLLocationDegrees latitude  = [[command.arguments objectAtIndex:1] doubleValue];
+  CLLocationDegrees longitude = [[command.arguments objectAtIndex:2] doubleValue];
+  CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+
+  NSString* type  = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:3]];
+  CDVMBXAnnotationType* annotationType = [self.annotationTypes objectForKey:type];
+
+  NSString* identifier = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:4]];
+
+  CDVPluginResult* pluginResult;
+  CDVMBXAnnotation* annotation = [CDVMBXAnnotation new];
+
+  if (annotationType) {
+    [annotation setType:annotationType];
+  }
+
+  [annotation setIdentifier:identifier];
+  [annotation setTitle:title];
+  [annotation setCoordinate:coordinate];
+
+  [self.mapView addAnnotation:annotation];
+  [self.annotations setObject:annotation forKey:identifier];
+
+  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:identifier];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)removeAnnotation:(CDVInvokedUrlCommand*)command
+{
+  NSString* identifier = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
+  [self.mapView removeAnnotation:[self.annotations objectForKey:identifier]];
+  [self.annotations removeObjectForKey:identifier];
+}
+
+- (void)removeAllAnnotations:(CDVInvokedUrlCommand*)command
+{
+  [self.mapView removeAnnotations:[self.annotations allValues]];
+  [self.annotations removeAllObjects];
+
+  [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Removed all annotations."];
+}
+
 #pragma mark - Helper Methods
 
 - (void)addOnlineMapLayer:(NSString *)mapId
@@ -119,6 +196,11 @@
   [self.mapView addOverlay:_rasterOverlay];
 }
 
+- (NSString *)generateAnnotationId
+{
+  self.annotationIdCount = self.annotationIdCount + 1;
+  return [NSString stringWithFormat:@"%d", self.annotationIdCount];
+}
 
 #pragma mark - MKMapViewDelegate protocol implementation
 
@@ -136,8 +218,6 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-  // This is boilerplate code to connect annotations with suitable views
-  //
   if ([annotation isKindOfClass:[MBXPointAnnotation class]]) {
     static NSString *MBXSimpleStyleReuseIdentifier = @"MBXSimpleStyleReuseIdentifier";
     MKAnnotationView *view = [mapView dequeueReusableAnnotationViewWithIdentifier:MBXSimpleStyleReuseIdentifier];
@@ -149,9 +229,16 @@
     view.image = ((MBXPointAnnotation *)annotation).image;
     view.canShowCallout = YES;
     return view;
-  }
 
-  return nil;
+  } else if ([annotation isKindOfClass:[CDVMBXAnnotation class]] && ((CDVMBXAnnotation *)annotation).type) {
+    CDVMBXAnnotationType *annotationType = ((CDVMBXAnnotation *)annotation).type;
+    CDVMBXAnnotationView *view = [[CDVMBXAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:annotationType.name];
+    view.image = annotationType.image;
+    return view;
+  } else {
+    MKPinAnnotationView *view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:nil];
+    return view;
+  }
 }
 
 #pragma mark - MBXRasterTileOverlayDelegate implementation
@@ -184,5 +271,6 @@
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
+
 
 @end

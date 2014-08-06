@@ -45,5 +45,14 @@
 
     <header-file src="src/ios/CDVMBXMapKit.h" />
     <source-file src="src/ios/CDVMBXMapKit.m" />
+
+    <header-file src="src/ios/CDVMBXAnnotation.h" />
+    <source-file src="src/ios/CDVMBXAnnotation.m" />
+
+    <header-file src="src/ios/CDVMBXAnnotationType.h" />
+    <source-file src="src/ios/CDVMBXAnnotationType.m" />
+
+    <header-file src="src/ios/CDVMBXAnnotationView.h" />
+    <source-file src="src/ios/CDVMBXAnnotationView.m" />
   </platform>
 </plugin>
