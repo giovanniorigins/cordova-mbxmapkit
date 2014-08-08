@@ -3,6 +3,35 @@ var argscheck = require('cordova/argscheck'),
     q         = require('com.alakra.cordova.mbxmapkit.q');
 
 function MBXMapKit() {
+  this.events = {
+    'mapRegionWillChange'           : null,
+    'mapRegionChanged'              : null,
+    'mapWillStartLoading'           : null,
+    'mapFinishedLoading'            : null,
+    'mapFailedToLoad'               : null,
+    'mapWillStartRendering'         : null,
+    'mapFinishedRendering'          : null,
+    'mapWillStartLocatingUser'      : null,
+    'mapStoppedLocatingUser'        : null,
+    'mapUpdatedUserLocation'        : null,
+    'mapFailedToLocateUser'         : null,
+    'mapChangedUserTrackingMode'    : null,
+    'mapRequestedAnnotation'        : null,
+    'mapAddedAnnotations'           : null,
+    'mapAnnotationCalloutTapped'    : null,
+    'mapChangedAnnotationDragState' : null,
+    'mapAnnotationSelected'         : null,
+    'mapAnnotationDeselected'       : null,
+    'mapOverlayRequested'           : null,
+    'mapAddedOverlays'              : null
+  };
+
+  // Store all events for later firing
+  for (var key in this.events) {
+    if (this.events.hasOwnProperty(key)) {
+      this.events[key] = new CustomEvent(key, { map: {} });
+    }
+  }
 };
 
 MBXMapKit.prototype = {
