@@ -196,10 +196,11 @@
   [self.mapView addOverlay:_rasterOverlay];
 }
 
-- (NSString *)generateAnnotationId
+- (NSString *)getAnnotationId:(id <MKAnnotation>)annotation
 {
-  self.annotationIdCount = self.annotationIdCount + 1;
-  return [NSString stringWithFormat:@"%d", self.annotationIdCount];
+  return [NSString stringWithFormat:@"%@|%@",
+                   [[NSNumber numberWithDouble: annotation.coordinate.latitude] stringValue],
+                   [[NSNumber numberWithDouble: annotation.coordinate.longitude] stringValue]];
 }
 
 #pragma mark - MKMapViewDelegate protocol implementation
@@ -226,7 +227,8 @@
 
 - (void)mapViewDidFailLoadingMap:(MKMapView *)mapView withError:(NSError *)error
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapFailedToLoad']);"];
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFailedToLoad'];e.detail.error='%@';document.dispatchEvent(e);", [error localizedDescription]];
+  [self.commandDelegate evalJs:command];
 }
 
 - (void)mapViewWillStartRenderingMap:(MKMapView *)mapView
@@ -236,7 +238,9 @@
 
 - (void)mapViewDidFinishRenderingMap:(MKMapView *)mapView fullyRendered:(BOOL)fullyRendered
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapFinishedRendering']);"];
+  NSString *isRendered = (fullyRendered) ? @"true" : @"false";
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFinishedRendering'];e.detail.fullyRendered=%@;document.dispatchEvent(e);", isRendered];
+  [self.commandDelegate evalJs:command];
 }
 
 - (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
@@ -251,12 +255,22 @@
 
 - (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapUpdatedUserLocation']);"];
+  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+  [dateFormatter setDateStyle:NSDateFormatterLongStyle];
+  [dateFormatter setTimeStyle:NSDateFormatterLongStyle];
+
+  NSString *dateString = [dateFormatter stringFromDate:userLocation.location.timestamp];
+  NSString *options = [NSString stringWithFormat:@"{ latitude: %@, longitude: %@, altitude: %@, timestamp: '%@' }",
+                                userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude, userLocation.location.altitude, dateString];
+
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapUpdatedUserLocation'];e.detail.location=%@;document.dispatchEvent(e);", options];
+  [self.commandDelegate evalJs:command];
 }
 
 - (void)mapView:(MKMapView *)mapView didFailToLocateUserWithError:(NSError *)error
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapFailedToLocateUser']);"];
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFailedToLocateUser'];e.detail.error='%@';document.dispatchEvent(e);", [error localizedDescription]];
+  [self.commandDelegate evalJs:command];
 }
 
 - (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
@@ -266,7 +280,8 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapRequestedAnnotation']);"];
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapRequestedAnnotation'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:annotation]];
+  [self.commandDelegate evalJs:command];
 
   if ([annotation isKindOfClass:[MBXPointAnnotation class]]) {
     static NSString *MBXSimpleStyleReuseIdentifier = @"MBXSimpleStyleReuseIdentifier";
@@ -308,12 +323,14 @@
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapAnnotationSelected']);"];
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapAnnotationSelected'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:view.annotation]];
+  [self.commandDelegate evalJs:command];
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapAnnotationDeselected']);"];
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapAnnotationDeselected'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:view.annotation]];
+  [self.commandDelegate evalJs:command];
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay

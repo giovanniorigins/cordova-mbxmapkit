@@ -29,7 +29,7 @@ function MBXMapKit() {
   // Store all events for later firing
   for (var key in this.events) {
     if (this.events.hasOwnProperty(key)) {
-      this.events[key] = new CustomEvent(key, { map: {} });
+      this.events[key] = new CustomEvent(key, { detail: {} });
     }
   }
 };
@@ -93,13 +93,7 @@ MBXMapKit.prototype = {
     var latitude  = options.coordinates.latitude;
     var longitude = options.coordinates.longitude;
     var type      = options.type || '';
-
-    // Generating ID for annotation
-    var id = (title + latitude + longitude + type)
-          .trim()
-          .replace(/([A-Z])/g, '-$1')
-          .replace(/[-_\s]+/g, '-')
-          .toLowerCase();
+    var id        = (latitude + "|" + longitude);
 
     var params = [title, latitude, longitude, type, id];
 
