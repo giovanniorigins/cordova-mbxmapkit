@@ -5,6 +5,8 @@ An Apache Cordova plugin for MapBox's MBXMapKit (for iOS only)
 
 ### Requirements
 
+**NOTE: This plugin is designed to run a single instance of a native map.**
+
 * Apache Cordova (3.5+)
 * iOS (7.1+)
 

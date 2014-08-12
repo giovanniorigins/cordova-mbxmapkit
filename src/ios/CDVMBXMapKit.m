@@ -196,28 +196,93 @@
   [self.mapView addOverlay:_rasterOverlay];
 }
 
-- (NSString *)generateAnnotationId
+- (NSString *)getAnnotationId:(id <MKAnnotation>)annotation
 {
-  self.annotationIdCount = self.annotationIdCount + 1;
-  return [NSString stringWithFormat:@"%d", self.annotationIdCount];
+  return [NSString stringWithFormat:@"%@|%@",
+                   [[NSNumber numberWithDouble: annotation.coordinate.latitude] stringValue],
+                   [[NSNumber numberWithDouble: annotation.coordinate.longitude] stringValue]];
 }
 
 #pragma mark - MKMapViewDelegate protocol implementation
 
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
 {
-  // This is boilerplate code to connect tile overlay layers with suitable renderers
-  //
-  if ([overlay isKindOfClass:[MBXRasterTileOverlay class]]) {
-    MKTileOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    return renderer;
-  }
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapRegionWillChange']);"];
+}
 
-  return nil;
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapRegionChanged']);"];
+}
+
+- (void)mapViewWillStartLoadingMap:(MKMapView *)mapView
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapWillStartLoading']);"];
+}
+
+- (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapFinishedLoading']);"];
+}
+
+- (void)mapViewDidFailLoadingMap:(MKMapView *)mapView withError:(NSError *)error
+{
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFailedToLoad'];e.detail.error='%@';document.dispatchEvent(e);", [error localizedDescription]];
+  [self.commandDelegate evalJs:command];
+}
+
+- (void)mapViewWillStartRenderingMap:(MKMapView *)mapView
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapWillStartRendering']);"];
+}
+
+- (void)mapViewDidFinishRenderingMap:(MKMapView *)mapView fullyRendered:(BOOL)fullyRendered
+{
+  NSString *isRendered = (fullyRendered) ? @"true" : @"false";
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFinishedRendering'];e.detail.fullyRendered=%@;document.dispatchEvent(e);", isRendered];
+  [self.commandDelegate evalJs:command];
+}
+
+- (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapWillStartLocatingUser']);"];
+}
+
+- (void)mapViewDidStopLocatingUser:(MKMapView *)mapView
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapStoppedLocatingUser']);"];
+}
+
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+{
+  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+  [dateFormatter setDateStyle:NSDateFormatterLongStyle];
+  [dateFormatter setTimeStyle:NSDateFormatterLongStyle];
+
+  NSString *dateString = [dateFormatter stringFromDate:userLocation.location.timestamp];
+  NSString *options = [NSString stringWithFormat:@"{ latitude: %@, longitude: %@, altitude: %@, timestamp: '%@' }",
+                                userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude, userLocation.location.altitude, dateString];
+
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapUpdatedUserLocation'];e.detail.location=%@;document.dispatchEvent(e);", options];
+  [self.commandDelegate evalJs:command];
+}
+
+- (void)mapView:(MKMapView *)mapView didFailToLocateUserWithError:(NSError *)error
+{
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapFailedToLocateUser'];e.detail.error='%@';document.dispatchEvent(e);", [error localizedDescription]];
+  [self.commandDelegate evalJs:command];
+}
+
+- (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapChangedUserTrackingMode']);"];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapRequestedAnnotation'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:annotation]];
+  [self.commandDelegate evalJs:command];
+
   if ([annotation isKindOfClass:[MBXPointAnnotation class]]) {
     static NSString *MBXSimpleStyleReuseIdentifier = @"MBXSimpleStyleReuseIdentifier";
     MKAnnotationView *view = [mapView dequeueReusableAnnotationViewWithIdentifier:MBXSimpleStyleReuseIdentifier];
@@ -240,6 +305,54 @@
     return view;
   }
 }
+
+- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapAddedAnnotations']);"];
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapAnnotationCalloutTapped']);"];
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView didChangeDragState:(MKAnnotationViewDragState)newState fromOldState:(MKAnnotationViewDragState)oldState
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapChangedAnnotationDragState']);"];
+}
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapAnnotationSelected'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:view.annotation]];
+  [self.commandDelegate evalJs:command];
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+  NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapAnnotationDeselected'];e.detail.annotationId='%@';document.dispatchEvent(e);", [self getAnnotationId:view.annotation]];
+  [self.commandDelegate evalJs:command];
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapOverlayRequested']);"];
+
+  // This is boilerplate code to connect tile overlay layers with suitable renderers
+  //
+  if ([overlay isKindOfClass:[MBXRasterTileOverlay class]]) {
+    MKTileOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    return renderer;
+  }
+
+  return nil;
+}
+
+- (void)mapView:(MKMapView *)mapView didAddOverlayRenderers:(NSArray *)renderers
+{
+  [self.commandDelegate evalJs:@"document.dispatchEvent(mbxmapkit.events['mapAddedOverlays']);"];
+}
+
+
 
 #pragma mark - MBXRasterTileOverlayDelegate implementation
 
