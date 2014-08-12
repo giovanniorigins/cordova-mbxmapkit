@@ -28,5 +28,8 @@
 - (void)addAnnotation:(CDVInvokedUrlCommand*)command;
 - (void)removeAnnotation:(CDVInvokedUrlCommand*)command;
 - (void)removeAllAnnotations:(CDVInvokedUrlCommand*)command;
+- (void)setCenterCoordinate:(CDVInvokedUrlCommand*)command;
+- (void)setRegion:(CDVInvokedUrlCommand*)command;
+- (void)getRegion:(CDVInvokedUrlCommand*)command;
 
 @end
