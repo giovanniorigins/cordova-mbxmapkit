@@ -76,18 +76,21 @@ MBXMapKit.prototype = {
   },
 
   setCenterCoordinate: function(latitude, longitude) {
+    this._callNative('setCenterCoordinate', [latitude, longitude], 'Failed to center native map view.');
   },
 
-  setVisibleRectangleCoordinates: function(latitude, longitude, width, height) {
+  setRegion: function(latitude, longitude, latitudeDelta, longitudeDelta) {
+    this._callNative('setRegion', [latitude, longitude, latitudeDelta, longitudeDelta], 'Failed to set region on native map view.');
+  },
+
+  getRegion: function() {
+    return this._callNativeAndReturnPromise('getRegion', [], 'Failed to get region for native map view.');
   },
 
   changeType: function(mapType) {
     this._callNative('changeType', [mapType], 'Failed to change the type of native map view.');
   },
 
-  /*
-   * @see https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSString_Class/Reference/NSString.html#//apple_ref/occ/instp/NSString/boolValue
-   */
   registerAnnotationType: function(title, options) {
     var isRemote = (options.remote) ? 'Y' : 'N';
     var params = [title, options.image_uri, isRemote, options.directory];

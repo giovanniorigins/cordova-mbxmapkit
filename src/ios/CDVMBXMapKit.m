@@ -148,7 +148,6 @@
 
   NSString* identifier = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:4]];
 
-  CDVPluginResult* pluginResult;
   CDVMBXAnnotation* annotation = [CDVMBXAnnotation new];
 
   if (annotationType) {
@@ -162,7 +161,7 @@
   [self.mapView addAnnotation:annotation];
   [self.annotations setObject:annotation forKey:identifier];
 
-  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:identifier];
+  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:identifier];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -171,6 +170,9 @@
   NSString* identifier = [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]];
   [self.mapView removeAnnotation:[self.annotations objectForKey:identifier]];
   [self.annotations removeObjectForKey:identifier];
+
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Removed annotation."];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)removeAllAnnotations:(CDVInvokedUrlCommand*)command
@@ -178,7 +180,52 @@
   [self.mapView removeAnnotations:[self.annotations allValues]];
   [self.annotations removeAllObjects];
 
-  [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Removed all annotations."];
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Removed all annotations."];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)setCenterCoordinate:(CDVInvokedUrlCommand*)command
+{
+  CLLocationDegrees latitude  = [[command.arguments objectAtIndex:0] doubleValue];
+  CLLocationDegrees longitude = [[command.arguments objectAtIndex:1] doubleValue];
+  CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+
+  [self.mapView setCenterCoordinate:coordinate animated:YES];
+
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Centered around coordinate."];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getRegion:(CDVInvokedUrlCommand*)command
+{
+  CLLocationDegrees latitude  = self.mapView.region.center.latitude;
+  CLLocationDegrees longitude = self.mapView.region.center.longitude;
+  CLLocationDegrees latitudinal  = self.mapView.region.span.latitudeDelta;
+  CLLocationDegrees longitudinal = self.mapView.region.span.longitudeDelta;
+
+  NSDictionary *params = @{ @"center": @{ @"latitude": [NSNumber numberWithDouble:latitude], @"longitude": [NSNumber numberWithDouble:longitude]},
+                            @"delta": @{ @"latitudinal": [NSNumber numberWithDouble:latitudinal], @"longitudinal": [NSNumber numberWithDouble:longitudinal]} };
+
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)setRegion:(CDVInvokedUrlCommand*)command
+{
+  CLLocationDegrees latitude  = [[command.arguments objectAtIndex:0] doubleValue];
+  CLLocationDegrees longitude = [[command.arguments objectAtIndex:1] doubleValue];
+  CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+
+  CLLocationDegrees latitudeDelta  = [[command.arguments objectAtIndex:2] doubleValue];
+  CLLocationDegrees longitudeDelta = [[command.arguments objectAtIndex:3] doubleValue];
+  MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
+
+  MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, span);
+
+  [self.mapView setRegion:region animated:YES];
+
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Resized map around coordinate."];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 #pragma mark - Helper Methods
