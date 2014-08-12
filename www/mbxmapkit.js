@@ -75,6 +75,12 @@ MBXMapKit.prototype = {
     this._callNative('setSize', [width, height], 'Failed to resize native map view.');
   },
 
+  setCenterCoordinate: function(latitude, longitude) {
+  },
+
+  setVisibleRectangleCoordinates: function(latitude, longitude, width, height) {
+  },
+
   changeType: function(mapType) {
     this._callNative('changeType', [mapType], 'Failed to change the type of native map view.');
   },

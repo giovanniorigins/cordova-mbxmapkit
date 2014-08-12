@@ -260,7 +260,7 @@
   [dateFormatter setTimeStyle:NSDateFormatterLongStyle];
 
   NSString *dateString = [dateFormatter stringFromDate:userLocation.location.timestamp];
-  NSString *options = [NSString stringWithFormat:@"{ latitude: %@, longitude: %@, altitude: %@, timestamp: '%@' }",
+  NSString *options = [NSString stringWithFormat:@"{ latitude: %f, longitude: %f, altitude: %f, timestamp: '%@' }",
                                 userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude, userLocation.location.altitude, dateString];
 
   NSString *command = [NSString stringWithFormat:@"var e=mbxmapkit.events['mapUpdatedUserLocation'];e.detail.location=%@;document.dispatchEvent(e);", options];
