@@ -31,5 +31,6 @@
 - (void)setCenterCoordinate:(CDVInvokedUrlCommand*)command;
 - (void)setRegion:(CDVInvokedUrlCommand*)command;
 - (void)getRegion:(CDVInvokedUrlCommand*)command;
+- (void)selectedAnnotations:(CDVInvokedUrlCommand*)command;
 
 @end

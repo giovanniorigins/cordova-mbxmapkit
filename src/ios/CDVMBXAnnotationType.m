@@ -44,7 +44,7 @@
                                      queue:[NSOperationQueue mainQueue]
                          completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
       if (data) {
-        _image = [UIImage imageWithData:data];
+        _image = [UIImage imageWithData:data scale:4.0];
       }
     }];
 }

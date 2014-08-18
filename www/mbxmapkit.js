@@ -93,7 +93,7 @@ MBXMapKit.prototype = {
 
   registerAnnotationType: function(title, options) {
     var isRemote = (options.remote) ? 'Y' : 'N';
-    var params = [title, options.image_uri, isRemote, options.directory];
+    var params = [title, options.image, isRemote, options.directory];
     return this._callNativeAndReturnPromise('registerAnnotationType', params, 'Failed to register a new annotation type.');
   },
 
@@ -115,6 +115,10 @@ MBXMapKit.prototype = {
 
   removeAllAnnotations: function() {
     return this._callNativeAndReturnPromise('removeAllAnnotations', [], 'Failed to remove all annotations.');
+  },
+
+  selectedAnnotations: function() {
+    return this._callNativeAndReturnPromise('selectedAnnotations', [], 'Failed to retrieve selected annotations.');
   },
 
   _callNative: function(method, args, errorMsg) {

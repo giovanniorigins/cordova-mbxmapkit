@@ -93,7 +93,9 @@
 
   CGRect frame = CGRectMake(self.webView.bounds.origin.x, self.webView.bounds.origin.y, width, height);
 
-  self.childView.frame = frame;
+  [UIView animateWithDuration:0.15 animations:^{
+      self.childView.frame = frame;
+    }];
 }
 
 - (void)getCenter:(CDVInvokedUrlCommand*)command
@@ -225,6 +227,19 @@
   [self.mapView setRegion:region animated:YES];
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Resized map around coordinate."];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)selectedAnnotations:(CDVInvokedUrlCommand*)command
+{
+  NSArray *annotations = [self.mapView selectedAnnotations];
+  __block NSMutableArray *annotationsAsJson = [NSMutableArray new];
+
+  [annotations enumerateObjectsUsingBlock:^(id <MKAnnotation> obj, NSUInteger idx, BOOL *stop) {
+      [annotationsAsJson addObject:[self getAnnotationId:obj]];
+    }];
+
+  CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:annotationsAsJson];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
