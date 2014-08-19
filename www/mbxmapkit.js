@@ -1,3 +1,4 @@
+
 var argscheck = require('cordova/argscheck'),
     exec      = require('cordova/exec'),
     q         = require('com.alakra.cordova.mbxmapkit.q');
@@ -79,8 +80,8 @@ MBXMapKit.prototype = {
     this._callNative('setCenterCoordinate', [latitude, longitude], 'Failed to center native map view.');
   },
 
-  setRegion: function(latitude, longitude, latitudeDelta, longitudeDelta) {
-    this._callNative('setRegion', [latitude, longitude, latitudeDelta, longitudeDelta], 'Failed to set region on native map view.');
+  setRegion: function(latitude, longitude, latitudeMeters, longitudeMeters) {
+    this._callNative('setRegion', [latitude, longitude, latitudeMeters, longitudeMeters], 'Failed to set region on native map view.');
   },
 
   getRegion: function() {

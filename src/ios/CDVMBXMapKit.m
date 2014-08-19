@@ -192,7 +192,7 @@
   CLLocationDegrees longitude = [[command.arguments objectAtIndex:1] doubleValue];
   CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
 
-  [self.mapView setCenterCoordinate:coordinate animated:YES];
+  [self.mapView setCenterCoordinate:coordinate];
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Centered around coordinate."];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -200,13 +200,15 @@
 
 - (void)getRegion:(CDVInvokedUrlCommand*)command
 {
-  CLLocationDegrees latitude  = self.mapView.region.center.latitude;
-  CLLocationDegrees longitude = self.mapView.region.center.longitude;
-  CLLocationDegrees latitudinal  = self.mapView.region.span.latitudeDelta;
-  CLLocationDegrees longitudinal = self.mapView.region.span.longitudeDelta;
+  MKCoordinateRegion region = [self.mapView regionThatFits:self.mapView.region];
+
+  CLLocationDegrees latitude  = region.center.latitude;
+  CLLocationDegrees longitude = region.center.longitude;
+  CLLocationDegrees latitudinal  = region.span.latitudeDelta;
+  CLLocationDegrees longitudinal = region.span.longitudeDelta;
 
   NSDictionary *params = @{ @"center": @{ @"latitude": [NSNumber numberWithDouble:latitude], @"longitude": [NSNumber numberWithDouble:longitude]},
-                            @"delta": @{ @"latitudinal": [NSNumber numberWithDouble:latitudinal], @"longitudinal": [NSNumber numberWithDouble:longitudinal]} };
+                            @"delta": @{ @"latitudinalDelta": [NSNumber numberWithDouble:latitudinal], @"longitudinalDelta": [NSNumber numberWithDouble:longitudinal]} };
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -220,8 +222,8 @@
 
   CLLocationDegrees latitudeDelta  = [[command.arguments objectAtIndex:2] doubleValue];
   CLLocationDegrees longitudeDelta = [[command.arguments objectAtIndex:3] doubleValue];
-  MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
 
+  MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
   MKCoordinateRegion region = MKCoordinateRegionMake(coordinate, span);
 
   [self.mapView setRegion:region animated:YES];
