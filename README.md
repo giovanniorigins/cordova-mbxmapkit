@@ -39,9 +39,8 @@ mbxmapkit.setCenter( x, y )
 mbxmapkit.show();
 ```
 
-**NOTE**: This library only intends to serve a single
-  MKMapView. Calling `create` subsequent times will have no effect
-  after the first call.
+**NOTE**: This library only intends to serve a single map. Calling
+  `create` subsequent times will have no effect after the first call.
 
 ## Using online mapbox tile layer
 
