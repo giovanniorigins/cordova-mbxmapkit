@@ -18,7 +18,30 @@ An Apache Cordova plugin for MapBox's MBXMapKit (for iOS only)
 
 # Installation
 
-# Usage
+Run this from the root directory of your cordova project to install the plugin:
+
+    cordova plugin add com.alakra.cordova.mbxmapkit
+
+After installing into your project, you can access all functionality
+through the global `mbxmapkit` object.
+
+# Quickstart
+
+```javascript
+var width = 640;
+var height = 480;
+var x = width / 2;
+var y = height /2;
+
+mbxmapkit.create();
+mbxmapkit.setSize( width, height );
+mbxmapkit.setCenter( x, y )
+mbxmapkit.show();
+```
+
+**NOTE**: This library only intends to serve a single
+  MKMapView. Calling `create` subsequent times will have no effect
+  after the first call.
 
 ## Using online mapbox tile layer
 
@@ -31,6 +54,10 @@ An Apache Cordova plugin for MapBox's MBXMapKit (for iOS only)
 ## Utilizing offline mode support
 
 ## Using Apple maps only
+
+## Falling back on web-based maps
+
+# Events
 
 # API
 
