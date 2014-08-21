@@ -31,7 +31,7 @@ through the global `mbxmapkit` object.
 var width = 640;
 var height = 480;
 var x = width / 2;
-var y = height /2;
+var y = height / 2;
 
 mbxmapkit.create();
 mbxmapkit.setSize( width, height );
