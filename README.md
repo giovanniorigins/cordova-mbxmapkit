@@ -20,7 +20,7 @@ An Apache Cordova plugin for MapBox's MBXMapKit (for iOS only)
 
 Run this from the root directory of your cordova project to install the plugin:
 
-    cordova plugin add com.alakra.cordova.mbxmapkit
+    cordova plugin add com.angelolakra.cordova.mbxmapkit
 
 After installing into your project, you can access all functionality
 through the global `mbxmapkit` object.
@@ -48,8 +48,13 @@ More documentation coming soon.
 
 * Angelo Lakra <angelo.lakra@gmail.com>
 
+### Source Code
+
+Available at [https://github.com/alakra/cordova-mbxmapkit](https://github.com/alakra/cordova-mbxmapkit)
+
 # License
 
 `cordova-mbxmapkit` and `q` are licensed under the MIT license and are
 copyrighted to their respective authors.  However, the code for
-`mbxmapkit` has it's own license that is described in [LICENSE](LICENSE).
+`mbxmapkit` has it's own license that is described in
+[https://raw.githubusercontent.com/alakra/cordova-mbxmapkit/master/LICENSE](LICENSE).
