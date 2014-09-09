@@ -42,29 +42,7 @@ mbxmapkit.show();
 **NOTE**: This library only intends to serve a single map. Calling
   `create` subsequent times will have no effect after the first call.
 
-## Using online mapbox tile layer
-
-## Using mapbox markers annotations
-
-## Using custom annotations
-
-## Utilizing performance caching
-
-## Utilizing offline mode support
-
-## Using Apple maps only
-
-## Falling back on web-based maps
-
-# Events
-
-# API
-
-# Support & Bugs
-
-# Contributing
-
-# Credits
+More documentation coming soon.
 
 ### Authors
 
