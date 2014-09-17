@@ -42,7 +42,9 @@ mbxmapkit.show();
 **NOTE**: This library only intends to serve a single map. Calling
   `create` subsequent times will have no effect after the first call.
 
-More documentation coming soon.
+# Examples
+
+To see full project examples, please visit the [cordova-mbxmapkit-examples](https://github.com/alakra/cordova-mbxmapkit-examples) project.
 
 ### Authors
 
