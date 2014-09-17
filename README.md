@@ -46,6 +46,8 @@ mbxmapkit.show();
 
 To see full project examples, please visit the [cordova-mbxmapkit-examples](https://github.com/alakra/cordova-mbxmapkit-examples) project.
 
+# Credits
+
 ### Authors
 
 * Angelo Lakra <angelo.lakra@gmail.com>
