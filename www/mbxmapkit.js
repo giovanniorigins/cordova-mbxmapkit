@@ -1,7 +1,7 @@
 
 var argscheck = require('cordova/argscheck'),
     exec      = require('cordova/exec'),
-    q         = require('com.alakra.cordova.mbxmapkit.q');
+    q         = require('com.angelolakra.cordova.mbxmapkit.q');
 
 function MBXMapKit() {
   this.events = {
