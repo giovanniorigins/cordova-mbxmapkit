@@ -363,6 +363,18 @@
     CDVMBXAnnotationType *annotationType = ((CDVMBXAnnotation *)annotation).type;
     CDVMBXAnnotationView *view = [[CDVMBXAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:annotationType.name];
     view.image = annotationType.image;
+
+    UILabel *label = [[UILabel alloc] init];
+
+    label.font            = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    label.textAlignment   = NSTextAlignmentCenter;
+    label.textColor       = [UIColor blackColor];
+    label.backgroundColor = [UIColor clearColor];
+    label.text            = ((CDVMBXAnnotation *)annotation).title;
+    label.frame           = CGRectMake(0, view.frame.size.height - 10, view.frame.size.width, view.frame.size.height);
+
+    [view addSubview:label];
+
     return view;
   } else {
     MKPinAnnotationView *view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:nil];
